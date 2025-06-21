@@ -25,6 +25,8 @@ export const login = async (req, res) => {
   const payload = { userId: user.id, email: user.email, role: user.role };
   const { accessToken, refreshToken } = generateTokens(payload);
 
+  req.user = payload;
+
   await saveRefreshToken(user.id, refreshToken);
 
   res.json({ accessToken, refreshToken });
