@@ -1,30 +1,35 @@
-// index.js
-import express from 'express'
-import mysql from 'mysql2/promise'
-import dotenv from 'dotenv'
-dotenv.config()
+import express from "express";
+import dotenv from "dotenv";
+import swaggerUi from "swagger-ui-express";
+import fs from "fs";
+import YAML from "yaml";
+import authRoutes from "./routes/auth.js";
+import cors from "cors";
 
-const app = express()
-app.use(express.json())
+dotenv.config();
 
-const pool = mysql.createPool({
-  host: process.env.MYSQL_HOST,
-  port: +process.env.MYSQL_PORT,
-  user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASSWORD,
-  database: process.env.MYSQL_DATABASE,
-})
+const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
-app.get('/', (req, res) => {
-  res.send('Backend API พร้อมแล้ว!')
-})
+// Swagger
+const swaggerDocument = YAML.parse(fs.readFileSync("./swagger.yaml", "utf8"));
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-app.get('/users', async (req, res) => {
-  const [rows] = await pool.query('SELECT * FROM users')
-  res.json(rows)
-})
+// Routes
+app.get("/", (req, res) => {
+  res.json({ message: "api ทำงานได้" });
+});
 
-const port = process.env.PORT || 3000
-app.listen(port, () => {
-  console.log(`API พร้อมให้ยิงที่ http://localhost:${port}`)
-})
+app.get("/health", (req, res) => {
+  res.json({ status: "ok" });
+});
+
+app.use("/api/auth", authRoutes);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`api ทำงานได้ที่ http://localhost:${PORT}`);
+  console.log(`api-docs ทำงานได้ที่ http://localhost:${PORT}/docs`);
+});

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `User` ADD COLUMN `refreshToken` VARCHAR(191) NULL,
+    ADD COLUMN `role` VARCHAR(191) NOT NULL DEFAULT 'user';
