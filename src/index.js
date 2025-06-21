@@ -6,6 +6,7 @@ import YAML from "yaml";
 import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/user.js";
 import postRoutes from "./routes/post.js";
+import tagRoutes from "./routes/tag.js";
 import cors from "cors";
 import morgan from "morgan";
 
@@ -33,6 +34,7 @@ app.get("/health", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
+app.use("/api/tags", tagRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
