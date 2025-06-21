@@ -34,7 +34,10 @@ export const getAllPostsAdmin = async (page = 1, limit = 10) => {
   // Transform posts to include tags as an array of strings
   const formattedPosts = posts.map((post) => ({
     ...post,
-    tags: post.tags.map((postTag) => postTag.tag.name),
+    tags: post.tags.map((postTag) => ({
+      id: postTag.tag.id,
+      name: postTag.tag.name,
+    })),
   }));
 
   return {
@@ -87,7 +90,10 @@ export const getAllPosts = async (page = 1, limit = 10, published = true) => {
   // Transform posts to include tags as an array of strings
   const formattedPosts = posts.map((post) => ({
     ...post,
-    tags: post.tags.map((postTag) => postTag.tag.name),
+    tags: post.tags.map((postTag) => ({
+      id: postTag.tag.id,
+      name: postTag.tag.name,
+    })),
   }));
 
   return {
@@ -126,25 +132,43 @@ export const getPostBySlug = async (slug) => {
   // Transform post to include tags as an array of strings
   return {
     ...post,
-    tags: post.tags.map((postTag) => postTag.tag.name),
+    tags: post.tags.map((postTag) => ({
+      id: postTag.tag.id,
+      name: postTag.tag.name,
+    })),
   };
 };
 
 // Create a new post
 export const createPost = async (data, authorId) => {
   const { title, slug, content, image, tags = [], published = false } = data;
-  console.log(data,authorId);
   // Create or connect tags
   const tagConnections = await Promise.all(
-    tags.map(async (tagName) => {
-      const tag = await prisma.tag.upsert({
-        where: { name: tagName },
-        update: {},
-        create: { name: tagName },
-      });
-      return { tagId: tag.id };
+    tags.map(async (tagId) => {
+      // ตรวจสอบว่าเป็น ID หรือไม่
+      const tagIdStr = String(tagId).trim();
+      if (!tagIdStr) return null; // ข้าม tag ที่เป็นค่าว่าง
+      
+      // ตรวจสอบว่า tag ID มีอยู่จริงหรือไม่
+      try {
+        const existingTag = await prisma.tag.findUnique({
+          where: { id: parseInt(tagIdStr) }
+        });
+        
+        if (existingTag) {
+          // ถ้ามี tag ID อยู่แล้ว ให้ใช้ ID นั้น
+          return { tagId: parseInt(tagIdStr) };
+        } else {
+          // ถ้าไม่มี tag ID นี้ ให้ข้ามไป
+          console.log(`Tag ID ${tagIdStr} not found, skipping`);
+          return null;
+        }
+      } catch (error) {
+        console.error(`Error checking tag ID ${tagIdStr}:`, error);
+        return null;
+      }
     })
-  );
+  ).then(connections => connections.filter(Boolean)); // กรองค่า null ออก
 
   // Create post with tags
   const post = await prisma.post.create({
@@ -181,7 +205,7 @@ export const createPost = async (data, authorId) => {
   // Transform post to include tags as an array of strings
   return {
     ...post,
-    tags: post.tags.map((postTag) => postTag.tag.name),
+    tags: post.tags.map((postTag) => postTag.tag.id),
   };
 };
 
@@ -218,15 +242,31 @@ export const updatePost = async (slug, data) => {
 
     // Create new tag connections
     const tagConnections = await Promise.all(
-      tags.map(async (tagName) => {
-        const tag = await prisma.tag.upsert({
-          where: { name: tagName },
-          update: {},
-          create: { name: tagName },
-        });
-        return { tagId: tag.id };
+      tags.map(async (tagId) => {
+        // ตรวจสอบว่าเป็น ID หรือไม่
+        const tagIdStr = String(tagId).trim();
+        if (!tagIdStr) return null; // ข้าม tag ที่เป็นค่าว่าง
+        
+        // ตรวจสอบว่า tag ID มีอยู่จริงหรือไม่
+        try {
+          const existingTag = await prisma.tag.findUnique({
+            where: { id: parseInt(tagIdStr) }
+          });
+          
+          if (existingTag) {
+            // ถ้ามี tag ID อยู่แล้ว ให้ใช้ ID นั้น
+            return { tagId: parseInt(tagIdStr) };
+          } else {
+            // ถ้าไม่มี tag ID นี้ ให้ข้ามไป
+            console.log(`Tag ID ${tagIdStr} not found, skipping`);
+            return null;
+          }
+        } catch (error) {
+          console.error(`Error checking tag ID ${tagIdStr}:`, error);
+          return null;
+        }
       })
-    );
+    ).then(connections => connections.filter(Boolean)); // กรองค่า null ออก
 
     tagOperations = {
       create: tagConnections,
@@ -345,7 +385,7 @@ export const getPostsByTag = async (tagName, page = 1, limit = 10) => {
   // Transform posts to include tags as an array of strings
   const formattedPosts = posts.map((post) => ({
     ...post,
-    tags: post.tags.map((postTag) => postTag.tag.name),
+    tags: post.tags.map((postTag) => postTag.tag.id),
   }));
 
   return {

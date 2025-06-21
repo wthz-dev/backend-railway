@@ -10,7 +10,9 @@ import {
 // Get all tags
 export const getAllTagsHandler = async (req, res) => {
   try {
-    const tags = await getAllTags(req.query.page, req.query.limit);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const tags = await getAllTags(page, limit);
     res.status(200).json(tags);
   } catch (error) {
     console.error("Error fetching tags:", error);
