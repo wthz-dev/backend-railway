@@ -9,13 +9,47 @@ datasource db {
 
 model User {
   id            Int     @id @default(autoincrement())
+  name          String?
   email         String  @unique
   password      String
   role          Role    @default(USER)
   refreshToken  String? // เพิ่ม refresh token (อาจเก็บเป็น hash)
+  posts         Post[]  // Relation to posts (author)
 }
 
 enum Role {
   USER
   ADMIN
+}
+
+model Post {
+  id        Int       @id @default(autoincrement())
+  slug      String    @unique
+  title     String
+  excerpt   String    @db.Text
+  content   String    @db.LongText
+  published Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  image     String?
+  author    User      @relation(fields: [authorId], references: [id])
+  authorId  Int
+  tags      PostTag[]
+}
+
+model Tag {
+  id    Int       @id @default(autoincrement())
+  name  String    @unique
+  posts PostTag[]
+}
+
+// Junction table for many-to-many relationship between Post and Tag
+model PostTag {
+  post    Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId  Int
+  tag     Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  tagId   Int
+
+  @@id([postId, tagId])
+
 }
