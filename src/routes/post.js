@@ -18,7 +18,8 @@ const router = express.Router();
 // =============================================
 // Public routes - ไม่ต้องล็อกอิน
 // =============================================
-
+router.get("/", getPosts);
+router.get("/:slug", getPostBySlugHandler);
 
 // =============================================
 // Protected routes - ต้องล็อกอินก่อน
