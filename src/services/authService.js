@@ -16,3 +16,14 @@ export const saveRefreshToken = (userId, token) => {
     data: { refreshToken: token }
   })
 }
+
+export const getUserById = (id) => {
+  return prisma.user.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      email: true,
+      role: true
+    }
+  })
+}

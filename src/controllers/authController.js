@@ -1,4 +1,4 @@
-import { createUser, findUserByEmail, saveRefreshToken } from '../services/authService.js'
+import { createUser, findUserByEmail, saveRefreshToken, getUserById } from '../services/authService.js'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { generateTokens } from '../utils/jwt.js'
@@ -41,4 +41,9 @@ export const refresh = async (req, res) => {
   } catch {
     res.status(401).json({ error: 'Invalid token' })
   }
+}
+
+export const me = async (req, res) => {
+  const user = await getUserById(req.user.userId)
+  res.json(user)
 }
