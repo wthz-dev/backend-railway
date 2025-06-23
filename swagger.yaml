@@ -3,6 +3,8 @@ info:
   title: My Blog API
   version: 1.0.0
   description: API for My Blog
+servers:
+  - url: http://localhost:3000
 security:
   - bearerAuth: []
 components:
@@ -25,6 +27,82 @@ components:
           type: string
         role:
           type: string
+    SiteSetting:
+      type: object
+      properties:
+        id:
+          type: integer
+          default: 1
+        siteName:
+          type: string
+        siteDescription:
+          type: string
+        logoUrl:
+          type: string
+          nullable: true
+        themeColor:
+          type: string
+          nullable: true
+        headerImageUrl:
+          type: string
+          nullable: true
+        darkMode:
+          type: boolean
+          default: false
+        metaTitle:
+          type: string
+          nullable: true
+        metaDescription:
+          type: string
+          nullable: true
+        metaKeywords:
+          type: string
+          nullable: true
+        ogImageUrl:
+          type: string
+          nullable: true
+        facebookUrl:
+          type: string
+          nullable: true
+        twitterUrl:
+          type: string
+          nullable: true
+        lineUrl:
+          type: string
+          nullable: true
+        contactEmail:
+          type: string
+          nullable: true
+        copyrightText:
+          type: string
+          nullable: true
+        socialLinks:
+          type: object
+          nullable: true
+        postsPerPage:
+          type: integer
+          default: 10
+        showTags:
+          type: boolean
+          default: true
+        showCategories:
+          type: boolean
+          default: true
+        enableComments:
+          type: boolean
+          default: true
+        analyticsId:
+          type: string
+          nullable: true
+        enableBanner:
+          type: boolean
+          default: false
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
     Tag:
       type: object
       properties:
@@ -72,6 +150,62 @@ components:
           items:
             type: string
 paths:
+  /api/settings:
+    get:
+      summary: Get site settings
+      tags: [Settings]
+      security: []
+      description: Get all site settings for the blog
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteSetting'
+        '500':
+          description: Server error
+    put:
+      summary: Update site settings
+      tags: [Settings]
+      description: Update site settings (Admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SiteSetting'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteSetting'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Server error
+  /api/settings/reset:
+    post:
+      summary: Reset site settings to default
+      tags: [Settings]
+      description: Reset site settings to default values (Admin only)
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteSetting'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Server error
   /api/auth/login:
     post:
       summary: Login user

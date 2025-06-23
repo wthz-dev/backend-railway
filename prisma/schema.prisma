@@ -51,5 +51,32 @@ model PostTag {
   tagId   Int
 
   @@id([postId, tagId])
+}
 
+model SiteSetting {
+  id               Int      @id @default(1)
+  siteName         String
+  siteDescription  String
+  logoUrl          String?
+  themeColor       String?
+  headerImageUrl   String?
+  darkMode         Boolean   @default(false)
+  metaTitle        String?
+  metaDescription  String?
+  metaKeywords     String?
+  ogImageUrl       String?
+  facebookUrl      String?
+  twitterUrl       String?
+  lineUrl          String?
+  contactEmail     String?
+  copyrightText    String?
+  socialLinks      Json?
+  postsPerPage     Int       @default(10)
+  showTags         Boolean   @default(true)
+  showCategories   Boolean   @default(true)
+  enableComments   Boolean   @default(true)
+  analyticsId      String?
+  enableBanner     Boolean   @default(false)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 }
