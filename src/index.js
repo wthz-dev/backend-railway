@@ -7,6 +7,7 @@ import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/user.js";
 import postRoutes from "./routes/post.js";
 import tagRoutes from "./routes/tag.js";
+import settingRoutes from "./routes/setting.js";
 import cors from "cors";
 import morgan from "morgan";
 
@@ -35,6 +36,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/tags", tagRoutes);
+app.use("/api/settings", settingRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

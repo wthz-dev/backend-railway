@@ -8,7 +8,7 @@ export const authenticate = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
     req.user = decoded
-    console.log('Authentication successful, user data:', req.user)
+    // console.log('Authentication successful, user data:', req.user)
     next()
   } catch (error) {
     console.error('Token verification failed:', error.message)
