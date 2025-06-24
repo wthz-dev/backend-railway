@@ -13,7 +13,7 @@ model User {
   email         String  @unique
   password      String
   role          Role    @default(USER)
-  refreshToken  String? // เพิ่ม refresh token (อาจเก็บเป็น hash)
+  refreshToken  String? @db.Text // เพิ่ม refresh token (อาจเก็บเป็น hash)
   posts         Post[]  // Relation to posts (author)
 }
 
