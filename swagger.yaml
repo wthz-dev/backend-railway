@@ -236,36 +236,6 @@ paths:
                   refreshToken:
                     type: string
 
-  /api/auth/register:
-    post:
-      summary: Register user
-      tags: [Register]
-      security: []
-      description: Register user and return access token and refresh token
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                password:
-                  type: string
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  accessToken:
-                    type: string
-                  refreshToken:
-                    type: string
-
   /api/auth/refresh:
     post:
       summary: Refresh access token
